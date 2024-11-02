@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Velz</string>
+    <string name="user_login">¿Ya tienes una cuenta? <b>Iniciar Sesion</b></string>
+    <string name="user_Registro">¿No tienes una cuenta? <b>Registrate</b></string>
+</resources>

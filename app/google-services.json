@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1075816144168",
+    "project_id": "app-velz",
+    "storage_bucket": "app-velz.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1075816144168:android:7fb333b8c2575a974a041d",
+        "android_client_info": {
+          "package_name": "com.upao.velz"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDPRZSSz4JWIuQWCu7yVwfQGei-DhIpty8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

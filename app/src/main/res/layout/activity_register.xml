@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:gravity="center_horizontal"
+        android:background="@drawable/background_velz">
+
+        <TextView
+            android:id="@+id/tvTitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Únete a Nosotros"
+            android:textSize="24sp"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            android:layout_marginTop="35dp" />
+
+        <TextView
+            android:id="@+id/tvSubtitulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Encuentre medicos de confianza"
+            android:textSize="16sp"
+            android:textColor="#677294"
+            android:layout_marginTop="15dp" />
+
+        <EditText
+            android:id="@+id/inputNameText"
+            android:hint="Nombre"
+            android:inputType="textPersonName"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <EditText
+            android:id="@+id/inputLastNameText"
+            android:hint="Apellido"
+            android:inputType="textPersonName"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <EditText
+            android:id="@+id/inputEmailText"
+            android:hint="Email"
+            android:inputType="textEmailAddress"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <EditText
+            android:id="@+id/inputPhoneText"
+            android:hint="Celular"
+            android:inputType="phone"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <EditText
+            android:id="@+id/inputDniText"
+            android:hint="Dni"
+            android:inputType="phone"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"/>
+
+        <EditText
+            android:id="@+id/inputPasswordText"
+            android:hint="Contraseña"
+            android:inputType="textPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"
+            android:drawableEnd="@drawable/baseline_visibility_off"/>
+
+        <EditText
+            android:id="@+id/inputConfirmPasswordText"
+            android:hint="Confirmar Contraseña"
+            android:inputType="textPassword"
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"
+            android:drawableEnd="@drawable/baseline_visibility_off"/>
+
+        <CheckBox
+            android:id="@+id/checkBoxTerminos"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Estoy de acuerdo con los Términos de servicio y la Política de privacidad"
+            android:layout_marginTop="12dp"
+            android:textColor="#677294" />
+
+        <Button
+            android:id="@+id/btnRegistrar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Registrar"
+            android:textColor="#FFFFFF"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginRight="30dp"
+            android:textSize="18sp"
+            android:background="@drawable/rounded_button_background"
+            android:padding="12dp" />
+
+        <TextView
+            android:id="@+id/textLogin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/user_login"
+            android:textColor="#00C853"
+            android:layout_marginTop="16dp"
+            android:textSize="14sp" />
+    </LinearLayout>
+</ScrollView>
