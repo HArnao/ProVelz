@@ -15,6 +15,8 @@ import com.upao.velz.models.Treatment
 
 class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.Adapter<TreatmentAdapter.ViewHolder>()  {
 
+     var currentList: List<Treatment> = treatments
+
     class ViewHolder(view: View): RecyclerView.ViewHolder(view){
         private var btnAppointment: Button = itemView.findViewById(R.id.btn_appointment)
         val nameTextView:TextView = view.findViewById(R.id.tv_treatment_title)
@@ -23,13 +25,13 @@ class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.A
         private var btnDetail: Button = itemView.findViewById(R.id.btn_details)
 
 
-        fun bing(treatment: Treatment){
-
+        fun bind(treatment: Treatment) {
+            nameTextView.text = treatment.name
+            descriptionTextView.text = treatment.description
             imageView.setImageResource(treatment.imageResId)
 
             btnAppointment.setOnClickListener {
                 val intent = Intent(itemView.context, AppointmentActivity::class.java)
-                // para extraer el id del intent
                 intent.putExtra("treatment_id", treatment.id)
                 intent.putExtra("treatment_name", treatment.name)
                 itemView.context.startActivity(intent)
@@ -55,18 +57,26 @@ class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.A
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.nameTextView.text = treatments[position].name
-        holder.descriptionTextView.text = treatments[position].description
-
-        holder.bing(treatments[position])
+        holder.bind(treatments[position])
     }
 
-
-    // actualiza la lista de tratamientos
     fun updateList(newTreatments: List<Treatment>) {
         treatments = newTreatments
+        currentList = newTreatments
         notifyDataSetChanged()
     }
 
+    // Método para filtrar la lista
+    fun filterList(query: String) {
+        currentList = if (query.isEmpty()) {
+            treatments
+        } else {
+            treatments.filter {
+                it.name.contains(query, ignoreCase = true) ||
+                        it.description.contains(query, ignoreCase = true)
+            }
+        }
+        notifyDataSetChanged()
+    }
 
 }

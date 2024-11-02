@@ -7,10 +7,14 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.upao.velz.apiLaravel.ApiService
+import com.upao.velz.apiLaravel.Apiclient
 import com.upao.velz.controllers.UserController
 import com.upao.velz.models.Appointment
+import com.upao.velz.models.RequestModel.AppointmentRequest
 import com.upao.velz.models.Treatment
 import com.upao.velz.models.User
+import com.upao.velz.models.responseModel.AppDetailResponse
 import com.upao.velz.sqlite.DbHelper
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -19,76 +23,78 @@ import java.util.UUID
 
 class AppointmentRepository(context: Context) {
 
-    private val dbHelper = DbHelper(context)
-    private val userRepository = UserRepository(context)
-    private val treatmentRepository = TreatmentRepository(context)
+    private val apiService = Apiclient.createService(ApiService::class.java)
 
-     fun addAppointment(appointment: Appointment): Boolean {
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put("dateAppointment", appointment.dateAppointment)
-            put("timeAppointment", appointment.timeAppointment)
-            put("description", appointment.description.name)
-            put("idUsuario", appointment.user.id)
-            put("status", appointment.status)
-            put("reminder", appointment.reminder)
-            put("createdAT", getCurrentDate())
-            put("updatedAT", getCurrentDate())
+
+    suspend fun addAppointment(appointment: Appointment): Boolean {
+        Log.d("AppointmentRequest", "Request: $appointment")
+        val appointmentRequest = AppointmentRequest(
+            id = appointment.id,
+            dateAppointment = appointment.dateAppointment,
+            timeAppointment = appointment.timeAppointment,
+            treatmentId = appointment.treatment,
+            userId = appointment.user,
+            reminder = appointment.reminder
+        )
+        Log.d("AppointmentRequest", "Request: $appointmentRequest")
+        return try {
+            val response = apiService.addAppointment(appointmentRequest)
+            Log.d("API Response", response.toString())
+            if (response.isSuccessful) {
+                true
+            } else {
+                Log.e("API Error", response.errorBody()?.string() ?: "Unknown error")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("API Exception", e.message ?: "Error desconocido")
+            false
         }
-
-        val newRowId = db.insert("appointments", null, values)
-        db.close()
-
-         return newRowId != -1L
     }
 
-    private fun getCurrentDate(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return dateFormat.format(Date())
-    }
-
-    @SuppressLint("Range")
-    fun getAppointments(): List<Appointment> {
-        val db = dbHelper.readableDatabase
-        val cursor = db.rawQuery("SELECT * FROM appointments WHERE status = 'Pendiente'", null)
-        val appointments = mutableListOf<Appointment>()
-
-        if (cursor.moveToFirst()) {
-            do {
-                val id = cursor.getInt(cursor.getColumnIndex("id"))
-                val dateAppointment = cursor.getString(cursor.getColumnIndex("dateAppointment"))
-                val timeAppointment = cursor.getString(cursor.getColumnIndex("timeAppointment"))
-                val descriptionText = cursor.getString(cursor.getColumnIndex("description"))
-                val userId = cursor.getInt(cursor.getColumnIndex("idUsuario"))
-                val status = cursor.getString(cursor.getColumnIndex("status"))
-                val reminder = cursor.getInt(cursor.getColumnIndex("reminder"))
-
-                val user = userRepository.getUserById(userId) ?: User(0, "ABC", "ABC", "ABC", "ABC", "ABC", "ABC")
-                val treatment = treatmentRepository.getTreatmentByName(descriptionText) ?: Treatment(
-                    UUID.randomUUID(), "ABC", "ABC", listOf(), listOf(), 0, "ABC")
-
-                val appointment = Appointment(
-                    id = id,
-                    dateAppointment = dateAppointment,
-                    timeAppointment = timeAppointment,
-                    description = treatment,
-                    user = user,
-                    status = status,
-                    reminder = reminder
-                )
-                appointments.add(appointment)
-            } while (cursor.moveToNext())
+    suspend fun getAppointments(): List<Appointment>? {
+        return try {
+            val response = apiService.getAppointment()
+            if (response.isSuccessful) {
+                response.body()?.map { appointmentResponse ->
+                    Appointment(
+                        id = appointmentResponse.id,
+                        dateAppointment = appointmentResponse.dateAppointment,
+                        timeAppointment = appointmentResponse.timeAppointment,
+                        treatment = appointmentResponse.treatmentId,
+                        user = appointmentResponse.userId,
+                        status = appointmentResponse.status,
+                        reminder = appointmentResponse.reminder
+                    )
+                }
+            } else {
+                null
+            }
+        } catch (e: Exception) {
+            null
         }
-
-        cursor.close()
-        db.close()
-
-        return appointments
     }
 
-    fun isAppointmentScheduled(date: String, time: String): Boolean {
+    suspend fun getListAppointment(id: Int): List<AppDetailResponse>? {
+        Log.d("LoadAppointments123", "repos")
+        return try {
+            val response = apiService.getListAppointment(id)
+            Log.d("LoadAppointments123", "Response: ${response.body()}")
+            if (response.isSuccessful) {
+                response.body()?.appointments
+            } else {
+                Log.e("LoadAppointments123", "Error en la respuesta: ${response.errorBody()?.string()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("LoadAppointments123", "Exception: ${e.message}", e)
+            null
+        }
+    }
+
+    suspend fun isAppointmentScheduled(date: String, time: String): Boolean {
         val appointments = getAppointments()
-        return appointments.any { it.dateAppointment == date && it.timeAppointment == time }
+        return appointments?.any { it.dateAppointment == date && it.timeAppointment == time } ?: false
     }
 
 }

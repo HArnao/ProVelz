@@ -12,6 +12,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.MediaController
 import android.widget.TextView
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -36,7 +37,14 @@ class DetailTreatActivity : AppCompatActivity() {
         }
 
         treatmentName = intent.getStringExtra("treatment_name")
-        val treatment : Treatment = treatmentController.getTreatmentByNameController(treatmentName.toString())!!
+        treatmentController.getTreatmentByName(treatmentName.toString()) { treatment ->
+            if (treatment != null) {
+                setupUI(treatment)
+            } else {
+                Toast.makeText(this, "Error al obtener el tratamiento", Toast.LENGTH_SHORT).show()
+                finish()
+            }
+        }
 
         val back = findViewById<ImageButton>(R.id.btnBack)
         back.setOnClickListener {
@@ -45,6 +53,9 @@ class DetailTreatActivity : AppCompatActivity() {
             finish()
         }
 
+    }
+
+    private fun setupUI(treatment: Treatment) {
         binding.tvTreatmentTitle.text = treatment.name
         binding.tvTreatmentDescription.text = treatment.description
 
@@ -62,7 +73,7 @@ class DetailTreatActivity : AppCompatActivity() {
             if (pointIndex != -1) {
                 spannableString.setSpan(
                     ForegroundColorSpan(numberColor),
-                    0, // Inicio
+                    0,
                     pointIndex + 1,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
@@ -111,7 +122,6 @@ class DetailTreatActivity : AppCompatActivity() {
         videoView.setOnCompletionListener {
             playIcon.visibility = View.VISIBLE
         }
-
     }
 
 

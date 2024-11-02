@@ -1,49 +1,37 @@
 package com.upao.velz.repositories
 
-import android.content.ContentValues
 import android.content.Context
-import com.google.gson.Gson
+import android.util.Log
 import com.upao.velz.R
+import com.upao.velz.apiLaravel.ApiService
+import com.upao.velz.apiLaravel.Apiclient
 import com.upao.velz.models.Treatment
-import com.upao.velz.sqlite.DbHelper
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import com.upao.velz.models.responseModel.TreatmentResponse
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 
 class TreatmentRepository (context: Context) {
 
-    private val dbHelper = DbHelper(context)
-
-    /*fun addTreatment(treatment: Treatment): Boolean {
-        val db = dbHelper.writableDatabase
-        val gson = Gson()
-        val procedureJson = gson.toJson(treatment.procedure)
-        val benefitsJson = gson.toJson(treatment.benefits)
-        val values = ContentValues().apply {
-            put("nameTreatment", treatment.name)
-            put("descriptionTreatment", treatment.description)
-            put("procedureTreatment", procedureJson)
-            put("benefitsTreatment", benefitsJson)
-            put("imgTreatment", treatment.imageResId)
-            put("videoTreatment", treatment.videoUri)
-            put("createdAT", getCurrentDate())
-            put("updatedAT", getCurrentDate())
+    suspend fun getTreatments(): List<TreatmentResponse> {
+        val apiService = Apiclient.createService(ApiService::class.java)
+        val response = apiService.getTreatments()
+        return withContext(Dispatchers.Main) {
+            if (response.isSuccessful) {
+                response.body()!!
+            } else {
+                    emptyList()
+            }
         }
-
-        val newRowId = db.insert("treatments", null, values)
-        db.close()
-
-        return newRowId != -1L
     }
 
-    private fun getCurrentDate(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return dateFormat.format(Date())
-    }*/
 
+    suspend fun getTreatmentsRepository(context: Context): List<Treatment> {
+        Log.d("TreatmentActivity", "REPOSITORYU")
+        val treatmentResponses = getTreatments()
 
-    fun getTreatmentsRepository(): List<Treatment> {
         val procedure1 = listOf(
             "1. Evaluación del estado inicial de los dientes y encías.",
             "2. Protección de las encías y tejidos blandos con un gel especial.",
@@ -58,7 +46,6 @@ class TreatmentRepository (context: Context) {
             "Procedimiento indoloro.",
             "Resultados visibles en pocas sesiones."
         )
-
         val procedure2 = listOf(
             "1. Examen dental para detectar acumulación de sarro y placa.",
             "2. Uso de ultrasonido o herramientas manuales para remover el sarro.",
@@ -72,7 +59,6 @@ class TreatmentRepository (context: Context) {
             "Aliento fresco y duradero.",
             "Dientes más limpios y brillantes."
         )
-
         val procedure3 = listOf(
             "1. Estudio ortodóntico con radiografías y moldes dentales.",
             "2. Colocación de los brackets en la superficie de los dientes.",
@@ -108,32 +94,61 @@ class TreatmentRepository (context: Context) {
         val videoPath3 = "android.resource://com.upao.velz/${R.raw.ortodoncia_tiktok}"
         val videoPath4 = "android.resource://com.upao.velz/${R.raw.implante_dental_tiktok}"
 
-        return listOf(
-            Treatment(UUID.randomUUID(),"Blanqueamiento dental","Procedimiento estético que busca aclarar el color de los dientes, eliminando manchas y decoloraciones. Utiliza agentes blanqueadores, como el peróxido de hidrógeno,", procedure1, benefits1, R.drawable.treatment_1, videoPath1),
-            Treatment(UUID.randomUUID(),"Limpieza Dental Profunda","Procedimiento de higiene dental que elimina el sarro y la placa acumulada debajo de las encías y en la superficie de los dientes", procedure2, benefits2,R.drawable.treatment_2, videoPath2),
-            Treatment(UUID.randomUUID() ,"Ortodoncia (Brackets)","Tratamiento que corrige la alineación de los dientes y la mordida mediante el uso de brackets.", procedure3, benefits3, R.drawable.treatment_3, videoPath3),
-            Treatment(UUID.randomUUID(),"Implantes Dentales","Procedimiento para reemplazar dientes perdidos mediante la colocación de un implante de titanio", procedure4, benefits4,R.drawable.treatment_4, videoPath4),
-        )
+        return treatmentResponses.map { treatmentResponse ->
+            when (treatmentResponse.id) {
+                1 -> Treatment(
+                    id = treatmentResponse.id,
+                    name = treatmentResponse.name,
+                    description = treatmentResponse.description,
+                    procedure = procedure1,
+                    benefits = benefits1,
+                    imageResId = R.drawable.treatment_1,
+                    videoUri = videoPath1
+                )
+                2 -> Treatment(
+                    id = treatmentResponse.id,
+                    name = treatmentResponse.name,
+                    description = treatmentResponse.description,
+                    procedure = procedure2,
+                    benefits = benefits2,
+                    imageResId = R.drawable.treatment_2,
+                    videoUri = videoPath2
+                )
+                3 -> Treatment(
+                    id = treatmentResponse.id,
+                    name = treatmentResponse.name,
+                    description = treatmentResponse.description,
+                    procedure = procedure3,
+                    benefits = benefits3,
+                    imageResId = R.drawable.treatment_3,
+                    videoUri = videoPath3
+                )
+                4 -> Treatment(
+                    id = treatmentResponse.id,
+                    name = treatmentResponse.name,
+                    description = treatmentResponse.description,
+                    procedure = procedure4,
+                    benefits = benefits4,
+                    imageResId = R.drawable.treatment_4,
+                    videoUri = videoPath4
+                )
+                else -> Treatment(
+                    id = treatmentResponse.id,
+                    name = treatmentResponse.name,
+                    description = treatmentResponse.description,
+                    procedure = emptyList(),
+                    benefits = emptyList(),
+                    imageResId = 0,
+                    videoUri = ""
+                )
+            }
+        }
     }
 
-    fun getTreatmentByName(name: String): Treatment? {
-        val treatments = getTreatmentsRepository()
+    suspend fun getTreatmentByName(context: Context, name: String): Treatment? {
+        val treatments = getTreatmentsRepository(context)
         return treatments.find { it.name.equals(name, ignoreCase = true) }
     }
 
-    /*fun insertDefaultTreatments() {
-        val db = dbHelper.readableDatabase
-        val defaultTreatments = getTreatmentsRepository()
-
-        for (treatment in defaultTreatments) {
-            val cursor = db.rawQuery("SELECT COUNT(*) FROM treatments WHERE nameTreatment = ?", arrayOf(treatment.name))
-            cursor.moveToFirst()
-            val count = cursor.getInt(0)
-            cursor.close()
-            if (count == 0) {
-                addTreatment(treatment)
-            }
-        }
-    }*/
 
 }

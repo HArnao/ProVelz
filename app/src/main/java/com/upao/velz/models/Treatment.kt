@@ -1,9 +1,7 @@
 package com.upao.velz.models
 
-import java.util.UUID
-
 data class Treatment(
-    var id: UUID,
+    var id: Int,
     var name: String,
     var description: String,
     val procedure: List<String>,

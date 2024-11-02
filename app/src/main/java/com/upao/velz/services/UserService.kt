@@ -10,20 +10,20 @@ class UserService(context: Context) {
 
     private val userRepository = UserRepository(context)
 
-    fun registerUser(user: User){
-        userRepository.registerUserFirebase(user)
+    suspend fun registerUser(user: User): Boolean {
+        return userRepository.registerUserFirebase(user)
     }
 
-    /*fun loginUser(context: Context, email: String, password: String): Boolean{
-        return userRepository.loginUser(context, email,password)
-    }*/
-
-    fun loginUser(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
-        userRepository.loginUser(email, password, onResult)
+    suspend fun loginUser(email: String, password: String): Pair<Boolean, String?> {
+        return userRepository.loginUser(email, password)
     }
 
-    fun getUserByEmail(email: String): User? {
+    suspend fun getUserByEmail(email: String): User? {
         return userRepository.getUserByEmail(email)
+    }
+
+    suspend fun getUserById(id: Int): User? {
+        return userRepository.getUserById(id)
     }
 
 }

@@ -97,34 +97,45 @@ class AppointmentActivity : AppCompatActivity() {
             }
 
             val userEmail = firebaseUser.email ?: "Usuario sin email"
+            Log.d("Email", userEmail)
             val userController = UserController(this)
-            val user = userController.getUserByEmail(userEmail) ?: User(0, "ABC", "ABC", "ABC", "ABC", "ABC", "ABC")
+            userController.getUserByEmail(userEmail) { user ->
+                Log.d("Email", "Request: $user")
+                if (user != null) {
+                    Log.d("Email", "Request: $user")
 
-            treatmentName = intent.getStringExtra("treatment_name")
-            val treatmentController = TreatmentController(this)
-            val treatment : Treatment = treatmentController.getTreatmentByNameController(treatmentName.toString())!!
-            val appointment = Appointment(
-                0,
-                selectedDateCalendar,
-                selectedTime,
-                treatment,
-                user,
-                "Pendiente",
-                reminderTime
-            )
+                    treatmentName = intent.getStringExtra("treatment_name")
+                    val treatmentController = TreatmentController(this)
+                    treatmentController.getTreatmentByName(treatmentName.toString()) { treatment ->
+                        if (treatment != null) {
+                            val appointment = Appointment(
+                                0,
+                                selectedDateCalendar,
+                                selectedTime,
+                                treatment.id,
+                                user.id,
+                                "Pendiente",
+                                reminderTime
+                            )
 
-            if (appointmentController.isAppointmentScheduled(selectedDateCalendar, selectedTime)) {
-                Toast.makeText(this, "Ya hay una cita agendada ahí", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
+                            appointmentController.isAppointmentScheduled(selectedDateCalendar, selectedTime) { isScheduled ->
+                                if (isScheduled) {
+                                    Toast.makeText(this, "Ya hay una cita agendada ahí", Toast.LENGTH_SHORT).show()
+                                } else {
+                                    appointmentController.addAppointment(appointment)
+                                    Toast.makeText(this, "Cita Registrada con Éxito", Toast.LENGTH_SHORT).show()
+                                    val intent = Intent(this, DetailAppointmentActivity::class.java)
+                                    startActivity(intent)
+                                }
+                            }
+                        } else {
+                            Toast.makeText(this, "Error al obtener el tratamiento", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                } else {
+                    Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+                }
             }
-
-            appointmentController.addAppointment(appointment)
-
-            Toast.makeText(this, "Cita Registrada con Éxito", Toast.LENGTH_SHORT).show()
-
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
-
         }
     }
 

@@ -1,139 +1,140 @@
 package com.upao.velz.repositories
 
-import android.annotation.SuppressLint
-import android.content.ContentValues
 import android.content.Context
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.upao.velz.apiLaravel.ApiService
+import com.upao.velz.apiLaravel.Apiclient
+import com.upao.velz.models.RequestModel.LoginRequest
 import com.upao.velz.models.User
-import com.upao.velz.sqlite.DbHelper
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import kotlinx.coroutines.tasks.await
 
 class UserRepository (context: Context){
-    private val dbHelper = DbHelper(context)
+
     private val firebaseAuth = FirebaseAuth.getInstance()
 
-    fun registerUserFirebase(user: User):Boolean{
-        val email = user.email
-        val password = user.password
+    suspend fun registerUserFirebase(user: User): Boolean {
+        return try {
+            val email = user.email
+            val password = user.password
 
-        firebaseAuth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    registerUser(user)
-                } else {
-                    throw task.exception ?: Exception("Error al registrar usuario")
-                }
+            if (password != null) {
+                firebaseAuth.createUserWithEmailAndPassword(email, password).await()
+                registerUser(user)
+                true
+            } else {
+                Log.e("Register", "El password es nulo, no se puede registrar el usuario en Firebase")
+                false
             }
-        return true
-    }
 
-    fun registerUser(user:User): Boolean {
-
-        val db = dbHelper.writableDatabase
-        val values = ContentValues().apply {
-            put("nombre", user.name)
-            put("apellido", user.lastname)
-            put("email", user.email)
-            put("phone", user.phone)
-            put("dni", user.dni)
-            put("password", user.password)
-            put("createdAT", getCurrentDate())
-            put("updatedAT", getCurrentDate())
+            registerUser(user)
+        } catch (e: Exception) {
+            Log.e("Register", "Error al registrar en Firebase: ${e.message}")
+            false
         }
-
-        val newRowId = db.insert("usuarios", null, values)
-        db.close()
-
-        return newRowId != -1L
     }
 
+    suspend fun registerUser(user: User): Boolean {
+        val apiService = Apiclient.createService(ApiService::class.java)
+        return try {
+            val response = apiService.registerUser(user)
 
-    /*
-    fun loginUser(context: Context, email: String, password: String): Boolean {
-        // Instancia de bd en modo lectura
-        val db = dbHelper.readableDatabase
-
-        // Consulta en la base de datos con los campos deseados
-        val cursor = db.rawQuery("SELECT * FROM usuarios WHERE email = ? AND password = ?", arrayOf(email, password)
-        )
-
-        val successful = cursor.count > 0
-
-        cursor.close()
-        db.close()
-
-        return successful
-    }*/
-
-    fun loginUser(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-
-                    onResult(true, null)
-                } else {
-                    onResult(false, "Error al iniciar sesión")
-                }
+            if (response.isSuccessful) {
+                Log.d("Register", "Registro exitoso en Laravel")
+                true
+            } else {
+                Log.e("Register", "Error al registrar en Laravel: ${response.errorBody()?.string()}")
+                false
             }
-    }
-
-    @SuppressLint("Range")
-    fun getUserByEmail(email: String): User? {
-        val db = dbHelper.readableDatabase
-        var user: User? = null
-
-        val cursor = db.rawQuery("SELECT * FROM usuarios WHERE email = ?" , arrayOf(email))
-
-        if (cursor.moveToFirst()) {
-            // Extraer los datos del cursor
-            val id = cursor.getInt(cursor.getColumnIndex("idUsuario"))
-            val name = cursor.getString(1)
-            val lastname = cursor.getString(2)
-            val email = cursor.getString(3)
-            val phone = cursor.getString(4)
-            val dni = cursor.getString(5)
-            val password = cursor.getString(6)
-
-            // Crear el objeto User
-            user = User(id, name, lastname, email, phone, dni, password)
+        } catch (e: Exception) {
+            Log.e("Register", "Error en la llamada a la API: ${e.message}")
+            false
         }
-
-        cursor.close()
-        db.close()
-
-        return user
     }
 
-    @SuppressLint("Range")
-    fun getUserById(userId: Int): User? {
-        val db = dbHelper.readableDatabase
-        var user: User? = null
+    suspend fun getUserByEmail(email: String): User? {
+        val apiService = Apiclient.createService(ApiService::class.java)
+        return try {
+            val response = apiService.getUserByEmail(email)
 
-        val cursor = db.rawQuery("SELECT * FROM usuarios WHERE idUsuario = ?", arrayOf(userId.toString()))
-
-        if (cursor.moveToFirst()) {
-            val id = cursor.getInt(cursor.getColumnIndex("idUsuario"))
-            val name = cursor.getString(cursor.getColumnIndex("nombre"))
-            val lastname = cursor.getString(cursor.getColumnIndex("apellido"))
-            val email = cursor.getString(cursor.getColumnIndex("email"))
-            val phone = cursor.getString(cursor.getColumnIndex("phone"))
-            val dni = cursor.getString(cursor.getColumnIndex("dni"))
-            val password = cursor.getString(cursor.getColumnIndex("password"))
-            user = User(id, name, lastname, email, phone, dni, password)
+            if (response.isSuccessful) {
+                Log.d("UserRepository", "Respuesta exitosa: ${response.body()}")
+                response.body()?.let { userResponse ->
+                    userResponse.user?.let { user ->
+                        User(
+                            id = user.id,
+                            name = user.name,
+                            lastname = user.lastname,
+                            email = user.email,
+                            phone = user.phone,
+                            dni = user.dni,
+                        )
+                    }
+                }
+            } else {
+                Log.e("UserRepository", "Error al obtener usuario por email: ${response.errorBody()?.string()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error en la llamada a la API: ${e.message}")
+            null
         }
-
-        cursor.close()
-        db.close()
-
-        return user
     }
 
-    private fun getCurrentDate(): String {
-        val dateFormat = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
-        return dateFormat.format(Date())
+    suspend fun loginUser(email: String, password: String): Pair<Boolean, String?> {
+        val apiService = Apiclient.createService(ApiService::class.java)
+
+        return try {
+            firebaseAuth.signInWithEmailAndPassword(email, password).await()
+
+            Pair(true, null)
+
+        } catch (firebaseException: Exception) {
+            try {
+                val userRequest = LoginRequest(email = email, password = password)
+
+                val response = apiService.loginUser(userRequest)
+
+                if (response.isSuccessful && response.body() != null) {
+                    Pair(true, null)
+                } else {
+                    val errorMessage = response.errorBody()?.string() ?: "Error desconocido"
+                    Pair(false, errorMessage)
+                }
+            } catch (apiException: Exception) {
+                Pair(false, "Error al iniciar sesión en la API: ${apiException.message}")
+            }
+        }
+    }
+
+
+
+    suspend fun getUserById(userId: Int): User? {
+        val apiService = Apiclient.createService(ApiService::class.java)
+        return try {
+            val response = apiService.getUserById(userId)
+
+            if (response.isSuccessful) {
+                response.body()?.let { userResponse ->
+                    userResponse.user?.let { user ->
+                        User(
+                            id = user.id,
+                            name = user.name,
+                            lastname = user.lastname,
+                            email = user.email,
+                            phone = user.phone,
+                            dni = user.dni,
+                        )
+                    }
+                }
+            } else {
+                Log.e("UserRepository", "Error al obtener usuario por ID: ${response.errorBody()?.string()}")
+                null
+            }
+        } catch (e: Exception) {
+            Log.e("UserRepository", "Error en la llamada a la API: ${e.message}")
+            null
+        }
     }
 
 

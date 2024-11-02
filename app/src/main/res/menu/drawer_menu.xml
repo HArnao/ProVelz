@@ -1,0 +1,9 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/nav_my_doctors" android:icon="@drawable/ic_doctor" android:title="Mis Doctores" />
+    <item android:id="@+id/nav_treatments" android:icon="@drawable/ic_treatments" android:title="Tratamientos" />
+    <item android:id="@+id/nav_history_appointments" android:icon="@drawable/ic_history" android:title="Mis Citas" />
+    <item android:id="@+id/nav_payments" android:icon="@drawable/ic_payments" android:title="Mis pagos" />
+    <item android:id="@+id/nav_profile" android:icon="@drawable/ic_profile" android:title="Mi Perfil" />
+    <item android:id="@+id/nav_logout" android:icon="@drawable/ic_logout" android:title="Cerrar Sesión" />
+</menu>
