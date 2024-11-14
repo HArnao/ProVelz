@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.AppointmentActivity"
+    tools:context=".activities.EditAppointmentActivity"
     android:background="@drawable/background_velz">
 
     <LinearLayout
@@ -28,7 +28,7 @@
             android:id="@+id/titleCitaNavbar"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="CITA"
+            android:text="EDITAR CITA"
             android:textSize="20dp"
             android:textColor="@android:color/black"
             android:textStyle="bold"

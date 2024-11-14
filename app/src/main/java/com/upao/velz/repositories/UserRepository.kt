@@ -40,14 +40,14 @@ class UserRepository (context: Context){
             val response = apiService.registerUser(user)
 
             if (response.isSuccessful) {
-                Log.d("Register", "Registro exitoso en Laravel")
+                Log.d("Register-Api", "Registro exitoso en Laravel")
                 true
             } else {
-                Log.e("Register", "Error al registrar en Laravel: ${response.errorBody()?.string()}")
+                Log.e("Register-Api", "Error al registrar en Laravel: ${response.errorBody()?.string()}")
                 false
             }
         } catch (e: Exception) {
-            Log.e("Register", "Error en la llamada a la API: ${e.message}")
+            Log.e("Register-Api", "Error en la llamada a la API: ${e.message}")
             false
         }
     }

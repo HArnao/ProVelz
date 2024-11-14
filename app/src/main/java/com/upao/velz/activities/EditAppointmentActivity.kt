@@ -4,7 +4,6 @@ import android.app.DatePickerDialog
 import android.content.Intent
 import android.graphics.Typeface
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.HorizontalScrollView
@@ -14,29 +13,16 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
-import com.upao.velz.MainActivity
 import com.upao.velz.R
 import com.upao.velz.controllers.AppointmentController
-import com.upao.velz.controllers.PaymentController
-import com.upao.velz.controllers.TreatmentController
-import com.upao.velz.controllers.UserController
-import com.upao.velz.databinding.ActivityAppointmentBinding
+import com.upao.velz.databinding.ActivityEditAppointmentBinding
 import com.upao.velz.models.Appointment
-import com.upao.velz.models.RequestModel.PaymentRequest
-import com.upao.velz.models.Treatment
-import com.upao.velz.models.User
-import java.text.SimpleDateFormat
 import java.util.Calendar
-import java.util.Date
-import java.util.Locale
 
-class AppointmentActivity : AppCompatActivity() {
+class EditAppointmentActivity : AppCompatActivity() {
 
     private val appointmentController = AppointmentController(this)
-    private val paymentController = PaymentController(this)
-    private lateinit var binding: ActivityAppointmentBinding
+    private lateinit var binding: ActivityEditAppointmentBinding
     private lateinit var datePickerDialog: DatePickerDialog
     private lateinit var llRecuerdame: LinearLayout
     private lateinit var llTiempoDisponible: LinearLayout
@@ -44,20 +30,22 @@ class AppointmentActivity : AppCompatActivity() {
     private var selectedDateCalendar: String = ""
     private var selectedTime: String = " "
     private var selectedReminderTime: Int? = null
-    private var treatmentName: String? = null
-    private var treatmentPrice: Int? = null
-    private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
-    private val currentDate = dateFormat.format(Date())
+    private var appointmentId: Int = 0
+    private var userId: Int = 0
+    private var treatmentId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityAppointmentBinding.inflate(layoutInflater)
+        binding = ActivityEditAppointmentBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val btnCalendario: Button = findViewById(R.id.btnCalendario)
         btnCalendario.setOnClickListener {
             showDatePickerDialog()
         }
+
+        val titleCitaNavbar: TextView = findViewById(R.id.titleCitaNavbar)
+        titleCitaNavbar.text = "EDITAR CITA"
 
         llRecuerdame = findViewById(R.id.llRecuerdame)
         llTiempoDisponible = findViewById(R.id.llTiempoDisponible)
@@ -66,11 +54,9 @@ class AppointmentActivity : AppCompatActivity() {
         createReminderButtons(reminderTimes)
 
 
-
-
         val btnBack: ImageButton = findViewById(R.id.btnBack)
         btnBack.setOnClickListener {
-            val intent = Intent(this,TreatmentActivity::class.java)
+            val intent = Intent(this,DetailAppointmentActivity::class.java)
             startActivity(intent)
             finish()
         }
@@ -95,72 +81,28 @@ class AppointmentActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
+            appointmentId = intent.getIntExtra("EXTRA_ID" ,0)
+            userId = intent.getIntExtra("EXTRA_USER_ID", 0) // -1 como valor por defecto
+            treatmentId = intent.getIntExtra("EXTRA_TREATMENT_ID", 0
+            )
+            val appointment = Appointment(
+                appointmentId,
+                selectedDateCalendar,
+                selectedTime,
+                treatmentId,
+                userId,
+                "Pendiente",
+                reminderTime
+            )
 
-            if (firebaseUser == null) {
-                Toast.makeText(this, "Usuario no logueado.", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-
-            val userEmail = firebaseUser.email ?: "Usuario sin email"
-            Log.d("Email", userEmail)
-            val userController = UserController(this)
-            userController.getUserByEmail(userEmail) { user ->
-                Log.d("Email", "Request: $user")
-                if (user != null) {
-                    Log.d("Email", "Request: $user")
-
-                    treatmentName = intent.getStringExtra("treatment_name")
-                    treatmentPrice = intent.getIntExtra("treatment_price", 0)
-
-                    val treatmentController = TreatmentController(this)
-                    treatmentController.getTreatmentByName(treatmentName.toString()) { treatment ->
-                        if (treatment != null) {
-                            val appointment = Appointment(
-                                0,
-                                selectedDateCalendar,
-                                selectedTime,
-                                treatment.id,
-                                user.id,
-                                "Pendiente",
-                                reminderTime
-                            )
-
-                            appointmentController.isAppointmentScheduled(selectedDateCalendar, selectedTime) { isScheduled ->
-                                if (isScheduled) {
-                                    Toast.makeText(this, "Ya hay una cita agendada ahí", Toast.LENGTH_SHORT).show()
-                                } else {
-                                    appointmentController.addAppointment(appointment){ appointmentId ->
-                                        if (appointmentId != null) {
-                                            Toast.makeText(this, "Cita Registrada con Éxito, Realiza el pago correspondiente", Toast.LENGTH_SHORT).show()
-                                            Log.d("Cita", "Cita postergada con exito ID: $appointmentId")
-
-                                            val payment = PaymentRequest(
-                                                appointmentId = appointmentId,
-                                                amount = treatmentPrice ?:0,
-                                                payment_date = currentDate
-                                            )
-
-                                            paymentController.addPayment(payment)
-
-                                            val intentNiubiz = Intent(this, NiubizActivity::class.java)
-                                            intentNiubiz.putExtra("appointment_id", appointmentId)
-                                            startActivity(intentNiubiz)
-                                            finish()
-
-                                        } else {
-                                            Toast.makeText(this, "Error al registrar la cita", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-
-                                }
-                            }
-                        } else {
-                            Toast.makeText(this, "Error al obtener el tratamiento", Toast.LENGTH_SHORT).show()
-                        }
-                    }
+            appointmentController.isAppointmentScheduled(selectedDateCalendar, selectedTime) { isScheduled ->
+                if (isScheduled) {
+                    Toast.makeText(this, "Ya hay una cita agendada ahí", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+                    appointmentController.editAppointment(appointment.id, appointment)
+                    Toast.makeText(this, "Cita Reagendada con Éxito", Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, DetailAppointmentActivity::class.java)
+                    startActivity(intent)
                 }
             }
         }

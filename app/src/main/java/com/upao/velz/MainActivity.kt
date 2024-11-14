@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.upao.velz.activities.DetailAppointmentActivity
+import com.upao.velz.activities.HistoryPayActivity
 import com.upao.velz.activities.LoginActivity
 import com.upao.velz.activities.TreatmentActivity
 import com.upao.velz.controllers.TreatmentController
@@ -39,6 +40,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         userNameTextView = findViewById(R.id.user_name)
+
+        val paymentSuccessMessage = intent.getStringExtra("payment_success_message")
+        paymentSuccessMessage?.let {
+            Toast.makeText(this, it, Toast.LENGTH_SHORT).show()
+        }
 
         val firebaseUser: FirebaseUser? = FirebaseAuth.getInstance().currentUser
         if (firebaseUser == null) {
@@ -81,7 +87,8 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.nav_payments -> {
-                    // Lógica para "Mis Pagos"
+                    val intent = Intent(this, HistoryPayActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.nav_profile -> {
                     // Lógica para "Mi Perfil"
@@ -119,7 +126,8 @@ class MainActivity : AppCompatActivity() {
 
         val cardPayments: androidx.cardview.widget.CardView = findViewById(R.id.card_payments)
         cardPayments.setOnClickListener {
-                // REDIRIGIR
+            val intent = Intent(this, HistoryPayActivity::class.java)
+            startActivity(intent)
         }
     }
 

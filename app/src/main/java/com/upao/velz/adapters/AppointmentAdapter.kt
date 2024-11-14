@@ -1,14 +1,17 @@
 package com.upao.velz.adapters
 
+import android.content.Intent
 import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.upao.velz.R
+import com.upao.velz.activities.EditAppointmentActivity
 import com.upao.velz.models.responseModel.AppDetailResponse
 
 class AppointmentAdapter(
@@ -34,6 +37,8 @@ class AppointmentAdapter(
         private val timeTextView: TextView = itemView.findViewById(R.id.tv_time)
         private val statusTextView: TextView = itemView.findViewById(R.id.tv_status)
         private val date_container_app: LinearLayout = itemView.findViewById(R.id.date_container_app)
+        private val buttonContainer: LinearLayout = itemView.findViewById(R.id.button_edit_app)
+        private val buttonEdit: Button = itemView.findViewById(R.id.btn_appointment)
 
         fun bind(appointment: AppDetailResponse) {
             val dateParts = appointment.dateAppointment.split("/")
@@ -49,6 +54,15 @@ class AppointmentAdapter(
             timeTextView.text = appointment.timeAppointment
             statusTextView.text = appointment.status
 
+            buttonEdit.setOnClickListener {
+                val intent = Intent(itemView.context, EditAppointmentActivity::class.java).apply {
+                    putExtra("EXTRA_ID", appointment.id)
+                    putExtra("EXTRA_USER_ID", appointment.userId)
+                    putExtra("EXTRA_TREATMENT_ID", appointment.treatmentId)
+                }
+                itemView.context.startActivity(intent)
+            }
+
             if (appointment.status == "Pendiente") {
                 date_container_app.setBackgroundResource(R.drawable.fondo_verde)
                 val textContainer = itemView.findViewById<LinearLayout>(R.id.text_container_new)
@@ -56,6 +70,7 @@ class AppointmentAdapter(
                 val oldTextView = itemView.findViewById<TextView>(R.id.tv_old)
                 oldTextView.text = "NEW"
                 oldTextView.setTextColor(ContextCompat.getColor(itemView.context, R.color.green))
+                buttonContainer.visibility = View.VISIBLE
             } else {
                 date_container_app.setBackgroundResource(R.drawable.fondo_rojo)
                 val textContainer = itemView.findViewById<LinearLayout>(R.id.text_container_new)

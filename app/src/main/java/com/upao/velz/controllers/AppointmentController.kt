@@ -13,13 +13,20 @@ import kotlinx.coroutines.launch
 class AppointmentController(context: Context) : ViewModel() {
     private val appointmentService = AppointmentService(context)
 
-    fun addAppointment(appointment: Appointment) {
+    fun addAppointment(appointment: Appointment, callback: (Int?) -> Unit) {
         viewModelScope.launch {
-            val success = appointmentService.addAppointment(appointment)
+            val appointmentId = appointmentService.addAppointment(appointment)
+            callback(appointmentId)
+        }
+    }
+
+    fun editAppointment(id: Int, appointment: Appointment) {
+        viewModelScope.launch {
+            val success = appointmentService.editAppointment(id, appointment)
             if (success) {
-                Log.d("Cita", "Cita agendada con exito")
+                Log.d("Cita", "Cita postergada con exito")
             } else {
-                Log.e("Cita", "Error al agendar cita")
+                Log.e("Cita", "Error al postergar cita")
             }
         }
     }
@@ -34,6 +41,13 @@ class AppointmentController(context: Context) : ViewModel() {
     fun getListAppointments(id: Int, callback: (List<AppDetailResponse>?) -> Unit) {
         viewModelScope.launch {
             val appointments = appointmentService.getListAppointments(id)
+            callback(appointments)
+        }
+    }
+
+    fun getAppointments(callback: (List<AppDetailResponse>?) -> Unit) {
+        viewModelScope.launch {
+            val appointments = appointmentService.getAppointments()
             callback(appointments)
         }
     }

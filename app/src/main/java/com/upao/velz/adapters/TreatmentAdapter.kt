@@ -34,6 +34,7 @@ class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.A
                 val intent = Intent(itemView.context, AppointmentActivity::class.java)
                 intent.putExtra("treatment_id", treatment.id)
                 intent.putExtra("treatment_name", treatment.name)
+                intent.putExtra("treatment_price", treatment.price)
                 itemView.context.startActivity(intent)
             }
 

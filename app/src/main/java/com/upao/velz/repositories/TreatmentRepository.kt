@@ -99,6 +99,7 @@ class TreatmentRepository (context: Context) {
                 1 -> Treatment(
                     id = treatmentResponse.id,
                     name = treatmentResponse.name,
+                    price = treatmentResponse.price,
                     description = treatmentResponse.description,
                     procedure = procedure1,
                     benefits = benefits1,
@@ -108,6 +109,7 @@ class TreatmentRepository (context: Context) {
                 2 -> Treatment(
                     id = treatmentResponse.id,
                     name = treatmentResponse.name,
+                    price = treatmentResponse.price,
                     description = treatmentResponse.description,
                     procedure = procedure2,
                     benefits = benefits2,
@@ -117,6 +119,7 @@ class TreatmentRepository (context: Context) {
                 3 -> Treatment(
                     id = treatmentResponse.id,
                     name = treatmentResponse.name,
+                    price = treatmentResponse.price,
                     description = treatmentResponse.description,
                     procedure = procedure3,
                     benefits = benefits3,
@@ -126,6 +129,7 @@ class TreatmentRepository (context: Context) {
                 4 -> Treatment(
                     id = treatmentResponse.id,
                     name = treatmentResponse.name,
+                    price = treatmentResponse.price,
                     description = treatmentResponse.description,
                     procedure = procedure4,
                     benefits = benefits4,
@@ -135,6 +139,7 @@ class TreatmentRepository (context: Context) {
                 else -> Treatment(
                     id = treatmentResponse.id,
                     name = treatmentResponse.name,
+                    price = treatmentResponse.price,
                     description = treatmentResponse.description,
                     procedure = emptyList(),
                     benefits = emptyList(),

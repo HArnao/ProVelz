@@ -97,6 +97,21 @@
                 app:layout_constraintStart_toEndOf="@+id/iv_treatment_image"
                 app:layout_constraintTop_toBottomOf="@+id/tv_treatment_title" />
 
+            <TextView
+                android:id="@+id/tv_treatment_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:text=""
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/iv_treatment_image"
+                app:layout_constraintTop_toBottomOf="@+id/tv_treatment_description" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 

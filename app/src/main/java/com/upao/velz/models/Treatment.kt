@@ -3,6 +3,7 @@ package com.upao.velz.models
 data class Treatment(
     var id: Int,
     var name: String,
+    var price: Int,
     var description: String,
     val procedure: List<String>,
     val benefits: List<String>,

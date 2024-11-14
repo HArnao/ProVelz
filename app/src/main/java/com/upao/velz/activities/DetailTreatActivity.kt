@@ -58,6 +58,7 @@ class DetailTreatActivity : AppCompatActivity() {
     private fun setupUI(treatment: Treatment) {
         binding.tvTreatmentTitle.text = treatment.name
         binding.tvTreatmentDescription.text = treatment.description
+        binding.tvTreatmentPrice.text = "Precio S/${treatment.price}"
 
         val imageView: ImageView = findViewById(R.id.iv_treatment_image)
         imageView.setImageResource(treatment.imageResId)
