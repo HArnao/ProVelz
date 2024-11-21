@@ -15,6 +15,7 @@ class UserService(context: Context) {
     }
 
     suspend fun loginUser(email: String, password: String): Pair<Boolean, String?> {
+        Log.e("UserFIREBASE", "SERVICEUSER")
         return userRepository.loginUser(email, password)
     }
 
@@ -24,6 +25,10 @@ class UserService(context: Context) {
 
     suspend fun getUserById(id: Int): User? {
         return userRepository.getUserById(id)
+    }
+
+    suspend fun editUserProfile(id: Int, user: User): Boolean {
+        return userRepository.editUserProfile(id, user)
     }
 
 }

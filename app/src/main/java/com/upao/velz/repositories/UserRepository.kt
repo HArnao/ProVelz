@@ -2,16 +2,20 @@ package com.upao.velz.repositories
 
 import android.content.Context
 import android.util.Log
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.upao.velz.apiLaravel.ApiService
 import com.upao.velz.apiLaravel.Apiclient
 import com.upao.velz.models.RequestModel.LoginRequest
+import com.upao.velz.models.RequestModel.UserRequest
 import com.upao.velz.models.User
 import kotlinx.coroutines.tasks.await
+import com.google.firebase.storage.FirebaseStorage
 
 class UserRepository (context: Context){
 
     private val firebaseAuth = FirebaseAuth.getInstance()
+    val apiService = Apiclient.createService(ApiService::class.java)
 
     suspend fun registerUserFirebase(user: User): Boolean {
         return try {
@@ -35,7 +39,6 @@ class UserRepository (context: Context){
     }
 
     suspend fun registerUser(user: User): Boolean {
-        val apiService = Apiclient.createService(ApiService::class.java)
         return try {
             val response = apiService.registerUser(user)
 
@@ -53,7 +56,6 @@ class UserRepository (context: Context){
     }
 
     suspend fun getUserByEmail(email: String): User? {
-        val apiService = Apiclient.createService(ApiService::class.java)
         return try {
             val response = apiService.getUserByEmail(email)
 
@@ -82,19 +84,15 @@ class UserRepository (context: Context){
     }
 
     suspend fun loginUser(email: String, password: String): Pair<Boolean, String?> {
-        val apiService = Apiclient.createService(ApiService::class.java)
 
         return try {
             firebaseAuth.signInWithEmailAndPassword(email, password).await()
-
             Pair(true, null)
 
         } catch (firebaseException: Exception) {
             try {
                 val userRequest = LoginRequest(email = email, password = password)
-
                 val response = apiService.loginUser(userRequest)
-
                 if (response.isSuccessful && response.body() != null) {
                     Pair(true, null)
                 } else {
@@ -107,10 +105,7 @@ class UserRepository (context: Context){
         }
     }
 
-
-
     suspend fun getUserById(userId: Int): User? {
-        val apiService = Apiclient.createService(ApiService::class.java)
         return try {
             val response = apiService.getUserById(userId)
 
@@ -137,5 +132,29 @@ class UserRepository (context: Context){
         }
     }
 
+    suspend fun editUserProfile(id: Int, user: User): Boolean {
+        val userRequest = UserRequest(
+            name = user.name,
+            lastname = user.lastname,
+            phone = user.phone,
+            dni = user.dni,
+        )
+
+        Log.d("UserRequest", "Request: $userRequest")
+
+        return try {
+            val response = apiService.editUser(id, userRequest)
+            Log.d("API Response", response.toString())
+            if (response.isSuccessful) {
+                true
+            } else {
+                Log.e("API Error", response.errorBody()?.string() ?: "Unknown error")
+                false
+            }
+        } catch (e: Exception) {
+            Log.e("API Exception", e.message ?: "Error desconocido")
+            false
+        }
+    }
 
 }

@@ -78,6 +78,7 @@ class AppointmentAdapter(
                 val oldTextView = itemView.findViewById<TextView>(R.id.tv_old)
                 oldTextView.text = "OLD"
                 oldTextView.setTextColor(Color.parseColor("#FF5252"))
+                buttonContainer.visibility = View.GONE
             }
 
             if (appointment.status == "Pendiente") {

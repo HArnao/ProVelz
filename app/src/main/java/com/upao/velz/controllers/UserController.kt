@@ -4,6 +4,7 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.upao.velz.models.Appointment
 import com.upao.velz.models.User
 import com.upao.velz.repositories.UserRepository
 import com.upao.velz.services.UserService
@@ -26,6 +27,7 @@ class UserController(context: Context): ViewModel() {
 
     fun loginUser(email: String, password: String, onResult: (Boolean, String?) -> Unit) {
         viewModelScope.launch {
+            Log.e("UserFIREBASE", "CONTROLLER USER")
             val (success, errorMessage) = userService.loginUser(email, password)
             onResult(success, errorMessage)
         }
@@ -42,6 +44,17 @@ class UserController(context: Context): ViewModel() {
         viewModelScope.launch {
             val user = userService.getUserById(id)
             onResult(user)
+        }
+    }
+
+    fun edtiUserProfile(id: Int, user: User) {
+        viewModelScope.launch {
+            val success = userService.editUserProfile(id, user)
+            if (success) {
+                Log.d("Ususario", "Perfil Editado con éxito")
+            } else {
+                Log.e("Usuario", "Error en la edición del perfil")
+            }
         }
     }
 }

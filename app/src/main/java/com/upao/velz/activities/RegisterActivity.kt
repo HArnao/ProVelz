@@ -17,6 +17,7 @@ import com.upao.velz.MainActivity
 import com.upao.velz.R
 import com.upao.velz.controllers.UserController
 import com.upao.velz.databinding.ActivityRegisterBinding
+import com.upao.velz.firebase.initializeSecondFirebaseApp
 import com.upao.velz.models.User
 import java.util.regex.Pattern
 

@@ -55,9 +55,11 @@ class LoginActivity : AppCompatActivity() {
 
             userController.loginUser(email, password) { success, error ->
                 if (success) {
+                    Log.e("LOGIN123456", "INGRESAR SESIÓN BIENVENIDO")
                     val intent = Intent(this, MainActivity::class.java)
+                    Log.e("LOGIN123456", "INGRESAR SESIÓN BIENVENIDO2")
                     startActivity(intent)
-                    finish()
+                    Log.e("LOGIN123456", "AADSSADASD")
                 } else {
                     Toast.makeText(this, error ?: "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
                 }

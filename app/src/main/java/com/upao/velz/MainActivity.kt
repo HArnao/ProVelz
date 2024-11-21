@@ -14,24 +14,32 @@ import androidx.drawerlayout.widget.DrawerLayout
 import com.google.android.material.navigation.NavigationView
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.google.firebase.FirebaseApp
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.upao.velz.activities.DentistActivity
 import com.upao.velz.activities.DetailAppointmentActivity
 import com.upao.velz.activities.HistoryPayActivity
 import com.upao.velz.activities.LoginActivity
+import com.upao.velz.activities.ProfileActivity
 import com.upao.velz.activities.TreatmentActivity
 import com.upao.velz.controllers.TreatmentController
 import com.upao.velz.controllers.UserController
+import com.upao.velz.firebase.initializeSecondFirebaseApp
 import com.upao.velz.models.Appointment
+import com.upao.velz.models.User
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var drawerLayout: DrawerLayout
     private lateinit var userNameTextView: TextView
+    private var userId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        initializeSecondFirebaseApp(this)
 
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.drawer_layout)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -58,6 +66,7 @@ class MainActivity : AppCompatActivity() {
         userController.getUserByEmail(userEmail) { user ->
             if (user != null) {
                 userNameTextView.text = "Hola ${user.name}"
+                userId = user.id
             } else {
                 Toast.makeText(this, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
             }
@@ -76,7 +85,8 @@ class MainActivity : AppCompatActivity() {
         navView.setNavigationItemSelectedListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.nav_my_doctors -> {
-
+                    val intent = Intent(this, DentistActivity::class.java)
+                    startActivity(intent)
                 }
                 R.id.nav_treatments -> {
                     val intent = Intent(this, TreatmentActivity::class.java)
@@ -91,11 +101,15 @@ class MainActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 R.id.nav_profile -> {
-                    // Lógica para "Mi Perfil"
+                    val intent = Intent(this, ProfileActivity::class.java)
+                    intent.putExtra("user_data_id", userId)
+                    startActivity(intent)
                 }
                 R.id.nav_logout -> {
+                    logoutAndCleanup()
                     val intent = Intent(this, LoginActivity::class.java)
                     startActivity(intent)
+                    finish()
                 }
             }
             drawerLayout.closeDrawers()
@@ -109,7 +123,8 @@ class MainActivity : AppCompatActivity() {
 
         val cardDoctor: androidx.cardview.widget.CardView = findViewById(R.id.card_doctor)
         cardDoctor.setOnClickListener {
-                // REDIRIGIR
+            val intent = Intent(this, DentistActivity::class.java)
+            startActivity(intent)
         }
 
         val cardHistory: androidx.cardview.widget.CardView = findViewById(R.id.card_history)
@@ -140,4 +155,11 @@ class MainActivity : AppCompatActivity() {
             super.onOptionsItemSelected(item)
         }
     }
+
+    fun logoutAndCleanup() {
+        FirebaseAuth.getInstance().signOut()
+        val secondaryApp = FirebaseApp.getInstance("StorageApp")
+        secondaryApp.delete()
+    }
+
 }

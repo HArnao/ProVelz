@@ -87,8 +87,8 @@ class PaymentAdapter(
 
         private fun generatePdf(payment: PaymentResponse) {
             val pdfPath = File(
-                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), //CEL REAL
-                //itemView.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), // EMULADOR
+                //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), //CEL REAL
+                itemView.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), // EMULADOR
                 "pdf_velz_pago_${payment.appointmentId}.pdf"
             )
 

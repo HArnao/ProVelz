@@ -6,6 +6,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 
 import com.upao.velz.R
+import com.upao.velz.firebase.initializeSecondFirebaseApp
 
 class SplashActivity : AppCompatActivity() {
 
