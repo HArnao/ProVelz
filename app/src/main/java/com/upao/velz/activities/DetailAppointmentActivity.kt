@@ -32,8 +32,6 @@ class DetailAppointmentActivity : AppCompatActivity() {
 
         val back = findViewById<ImageButton>(R.id.btnBack)
         back.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
-            startActivity(intent)
             finish()
         }
         loadAppointments()
