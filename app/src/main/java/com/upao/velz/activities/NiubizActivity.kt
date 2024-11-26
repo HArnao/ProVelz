@@ -35,12 +35,14 @@ class NiubizActivity : AppCompatActivity() {
         binding.webview.settings.mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW
 
         binding.webview.loadUrl("http://192.168.0.14:8000/niubiz/$appointment_id") //LOCAL
+        // binding.webview.loadUrl("http://3.141.15.88/niubiz/$appointment_id") //DEPLOY
 
         binding.webview.webViewClient = object : WebViewClient() {
             @RequiresApi(Build.VERSION_CODES.O)
             override fun onPageFinished(view: WebView?, url: String?) {
                 super.onPageFinished(view, url)
-                if(url == "http://192.168.0.14:8000/payment-success") {
+               // if(url == "http://3.141.15.88/payment-success") { //DEPLOY
+                if(url == "http://192.168.0.14:8000/payment-success") { //LOCAL
                     val intent = Intent(this@NiubizActivity, MainActivity::class.java)
                     intent.putExtra("payment_success_message", "Pago realizado con éxito")
                     startActivity(intent)

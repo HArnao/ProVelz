@@ -80,6 +80,14 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tv_dentist"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text=""
+                android:textSize="14sp" />
+
+            <TextView
                 android:id="@+id/tv_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -104,7 +112,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/text_container_new"
             android:layout_marginStart="48dp"
-            android:layout_marginTop="-24dp"
+            android:layout_marginTop="-15dp"
             android:layout_toEndOf="@id/date_container_app"
             android:gravity="end"
             android:orientation="horizontal"

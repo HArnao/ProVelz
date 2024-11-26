@@ -3,6 +3,7 @@ package com.upao.velz.adapters
 import android.content.Intent
 import android.net.Uri
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -87,8 +88,8 @@ class PaymentAdapter(
 
         private fun generatePdf(payment: PaymentResponse) {
             val pdfPath = File(
-                //Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), //CEL REAL
-                itemView.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), // EMULADOR
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS), //CEL REAL
+                // itemView.context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS), // EMULADOR
                 "pdf_velz_pago_${payment.appointmentId}.pdf"
             )
 
@@ -99,7 +100,7 @@ class PaymentAdapter(
 
                 document.add(Paragraph("************************************ DATOS DE PAGO ************************************"))
                 document.add(Paragraph("- Clínica: Velz Odontology"))
-                document.add(Paragraph("- Doctor: Juan Peréz"))
+                document.add(Paragraph("- Doctor: ${payment.appointment.dentist.name}" + " " + "${payment.appointment.dentist.lastname}"))
                 document.add(Paragraph("- Monto: S/${payment.amount}"))
                 document.add(Paragraph("- Usuario: ${userName}"))
                 document.add(Paragraph("- Tratamiento: ${payment.appointment.treatment.name}"))
@@ -110,6 +111,7 @@ class PaymentAdapter(
 
             } catch (e: Exception) {
                 Toast.makeText(itemView.context, "Error generando PDF: ${e.message}", Toast.LENGTH_LONG).show()
+                Log.e("PaymentAdapter", "Error generando PDF: ${e.message}")
             }
         }
 

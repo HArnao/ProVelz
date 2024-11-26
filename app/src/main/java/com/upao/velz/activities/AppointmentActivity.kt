@@ -45,7 +45,7 @@ class AppointmentActivity : AppCompatActivity() {
     private var selectedTime: String = " "
     private var selectedReminderTime: Int? = null
     private var treatmentName: String? = null
-    private var treatmentPrice: Int? = null
+    private val dentistId: Int? = null
     private val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
     private val currentDate = dateFormat.format(Date())
 
@@ -111,13 +111,14 @@ class AppointmentActivity : AppCompatActivity() {
                     Log.d("Email", "Request: $user")
 
                     treatmentName = intent.getStringExtra("treatment_name")
-                    treatmentPrice = intent.getIntExtra("treatment_price", 0)
+                    val dentistId = intent.getIntExtra("dentist_id", 0)
 
                     val treatmentController = TreatmentController(this)
                     treatmentController.getTreatmentByName(treatmentName.toString()) { treatment ->
                         if (treatment != null) {
                             val appointment = Appointment(
                                 0,
+                                dentistId,
                                 selectedDateCalendar,
                                 selectedTime,
                                 treatment.id,
@@ -137,7 +138,7 @@ class AppointmentActivity : AppCompatActivity() {
 
                                             val payment = PaymentRequest(
                                                 appointmentId = appointmentId,
-                                                amount = treatmentPrice ?:0,
+                                                amount = treatment.price,
                                                 payment_date = currentDate
                                             )
 

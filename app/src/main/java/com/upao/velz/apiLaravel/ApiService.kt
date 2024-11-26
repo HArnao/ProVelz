@@ -42,7 +42,7 @@ interface ApiService {
     suspend fun addAppointment(@Body appointRequest: AppointmentRequest): Response<AppIdResponse>
 
     @PUT("appointment/edit/{id}")
-    suspend fun editAppointment(@Path("id") id: Int, @Body appointmentRequest: AppointmentRequest): Response<AppointmentResponse>
+    suspend fun editAppointment(@Path("id") id: Int, @Body appointmentRequest: AppointmentRequest): Response<AppIdResponse>
 
     @GET("appointment/list")
     suspend fun getAppointment(): Response<ListAppResponse>

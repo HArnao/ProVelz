@@ -30,6 +30,7 @@ class AppointmentRepository(context: Context) {
         Log.d("AppointmentRequest", "Request: $appointment")
         val appointmentRequest = AppointmentRequest(
             id = appointment.id,
+            dentistId = appointment.dentist,
             dateAppointment = appointment.dateAppointment,
             timeAppointment = appointment.timeAppointment,
             treatmentId = appointment.treatment,
@@ -98,12 +99,12 @@ class AppointmentRepository(context: Context) {
     suspend fun editAppointment(id: Int, appointment: Appointment): Boolean {
         val appointmentRequest = AppointmentRequest(
             id = appointment.id,
+            dentistId = appointment.dentist,
             dateAppointment = appointment.dateAppointment,
             timeAppointment = appointment.timeAppointment,
             treatmentId = appointment.treatment,
             userId = appointment.user,
             reminder = appointment.reminder
-
         )
         Log.d("AppointmentRequest", "Request: $appointmentRequest")
         return try {

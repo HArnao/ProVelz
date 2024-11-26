@@ -39,6 +39,7 @@ class AppointmentAdapter(
         private val date_container_app: LinearLayout = itemView.findViewById(R.id.date_container_app)
         private val buttonContainer: LinearLayout = itemView.findViewById(R.id.button_edit_app)
         private val buttonEdit: Button = itemView.findViewById(R.id.btn_appointment)
+        private val dentistTextView: TextView = itemView.findViewById(R.id.tv_dentist)
 
         fun bind(appointment: AppDetailResponse) {
             val dateParts = appointment.dateAppointment.split("/")
@@ -53,12 +54,14 @@ class AppointmentAdapter(
             titleTextView.text = appointment.treatment.name
             timeTextView.text = appointment.timeAppointment
             statusTextView.text = appointment.status
+            dentistTextView.text = "Doctor: " + appointment.dentist.lastname
 
             buttonEdit.setOnClickListener {
                 val intent = Intent(itemView.context, EditAppointmentActivity::class.java).apply {
                     putExtra("EXTRA_ID", appointment.id)
                     putExtra("EXTRA_USER_ID", appointment.userId)
                     putExtra("EXTRA_TREATMENT_ID", appointment.treatmentId)
+                    putExtra("EXTRA_DENTIST_ID", appointment.dentistId)
                 }
                 itemView.context.startActivity(intent)
             }

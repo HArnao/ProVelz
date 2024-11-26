@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class AppointmentResponse(
     @SerializedName("id") val id: Int,
+    @SerializedName("dentist_id") val dentistId: Int,
     @SerializedName("date_appointment") val dateAppointment: String,
     @SerializedName("time_appointment") val timeAppointment: String,
     @SerializedName("treatment_id") val treatmentId: Int,

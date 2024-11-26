@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.upao.velz.R
 import com.upao.velz.activities.AppointmentActivity
 import com.upao.velz.activities.DetailTreatActivity
+import com.upao.velz.activities.SelectDentistActivity
 import com.upao.velz.models.Treatment
 
 class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.Adapter<TreatmentAdapter.ViewHolder>()  {
@@ -31,7 +32,7 @@ class TreatmentAdapter(private var treatments: List<Treatment>) : RecyclerView.A
             imageView.setImageResource(treatment.imageResId)
 
             btnAppointment.setOnClickListener {
-                val intent = Intent(itemView.context, AppointmentActivity::class.java)
+                val intent = Intent(itemView.context, SelectDentistActivity::class.java)
                 intent.putExtra("treatment_id", treatment.id)
                 intent.putExtra("treatment_name", treatment.name)
                 intent.putExtra("treatment_price", treatment.price)

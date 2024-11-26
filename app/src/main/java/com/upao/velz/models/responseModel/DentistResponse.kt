@@ -8,4 +8,4 @@ data class DentistResponse(
     @SerializedName("lastname") val lastname: String,
     @SerializedName("specialty") val specialty: String,
     @SerializedName("email") val email: String,
-)
+){}

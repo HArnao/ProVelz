@@ -2,6 +2,7 @@ package com.upao.velz.models
 
 data class Appointment(
     val id: Int,
+    val dentist: Int,
     val dateAppointment: String,
     val timeAppointment: String,
     val treatment: Int,

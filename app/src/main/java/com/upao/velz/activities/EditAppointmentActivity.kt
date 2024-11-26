@@ -13,6 +13,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.children
+import com.upao.velz.MainActivity
 import com.upao.velz.R
 import com.upao.velz.controllers.AppointmentController
 import com.upao.velz.databinding.ActivityEditAppointmentBinding
@@ -33,6 +34,7 @@ class EditAppointmentActivity : AppCompatActivity() {
     private var appointmentId: Int = 0
     private var userId: Int = 0
     private var treatmentId: Int = 0
+    private var dentistId: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,10 +85,12 @@ class EditAppointmentActivity : AppCompatActivity() {
 
             appointmentId = intent.getIntExtra("EXTRA_ID" ,0)
             userId = intent.getIntExtra("EXTRA_USER_ID", 0) // -1 como valor por defecto
-            treatmentId = intent.getIntExtra("EXTRA_TREATMENT_ID", 0
-            )
+            treatmentId = intent.getIntExtra("EXTRA_TREATMENT_ID", 0)
+            dentistId = intent.getIntExtra("EXTRA_DENTIST_ID", 0)
+
             val appointment = Appointment(
                 appointmentId,
+                dentistId,
                 selectedDateCalendar,
                 selectedTime,
                 treatmentId,
@@ -101,7 +105,7 @@ class EditAppointmentActivity : AppCompatActivity() {
                 } else {
                     appointmentController.editAppointment(appointment.id, appointment)
                     Toast.makeText(this, "Cita Reagendada con Éxito", Toast.LENGTH_SHORT).show()
-                    val intent = Intent(this, DetailAppointmentActivity::class.java)
+                    val intent = Intent(this, MainActivity::class.java)
                     startActivity(intent)
                 }
             }
